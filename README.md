@@ -71,7 +71,7 @@ public async Task<IEnumerable<string>> GetNames()
     return names;
 }
 ```
-To set UPLOAD functions we will need modify Save methoed in in BlobStorage.cs as follows:<br>
+To set UPLOAD functions we will need modify Save method in in BlobStorage.cs as follows:<br>
 ```
 public Task Save(Stream fileStream, string name)
 {
@@ -87,3 +87,51 @@ public Task Save(Stream fileStream, string name)
     return blobClient.UploadAsync(fileStream);
 }
 ```
+To set DOWNLOAD functions we will need modify Load method in in BlobStorage.cs as follows:<br>
+```
+public Task<Stream> Load(string name)
+{
+    BlobServiceClient blobServiceClient = new BlobServiceClient(storageConfig.ConnectionString);
+
+    // Get the container the blobs are saved in
+    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(storageConfig.FileContainerName);
+
+    // Get a client to operate on the blob so we can read it.
+    BlobClient blobClient = containerClient.GetBlobClient(name);
+
+    return blobClient.OpenReadAsync();
+}
+```
+## Deploy in Azure
+We will need to create container "files" in storage account:
+<img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/4.jpg" width="800"/>  <br>
+Locate 'Models/BlobStorage.cs' file and modify code as follow:<br>
+Application configuration is completed and can be launched via Azure App Service. Following commands needs to be initiated to set apllication:<br>
+```
+az appservice plan create --name blob-exercise-plan --resource-group FileService --sku FREE --location francecentral
+```
+```
+az webapp create --name FileServiceUploadDownload --plan blob-exercise-plan --resource-group FileService
+```
+```
+CONNECTIONSTRING=$(az storage account show-connection-string --name fileserviceaccount --resource-group FileService --output tsv)
+```
+```
+az webapp config appsettings set --name FileServiceUploadDownload --resource-group FileService --settings AzureStorageConfig:ConnectionString=$CONNECTIONSTRING AzureStorageConfig:FileContainerName=files
+```
+If every step was sucessfull then we should see following 3x resources in resource group:<br>
+<img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/5.jpg" width="800"/>  <br>
+####Finally we will deploy application:<br>
+```
+dotnet publish -o pub
+cd pub
+zip -r ../site.zip *
+```
+```
+az webapp deployment source config-zip --src ../site.zip --name FileServiceUploadDownload --resource-group FileService
+``
+So see running app visit following link:
+```
+https://FileServiceUploadDownload.azurewebsites.net
+```
+<img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/6.jpg" width="800"/>  <br>
