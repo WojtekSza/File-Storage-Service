@@ -33,6 +33,7 @@ code .
 ```
 <img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/1.jpg" width="800"/>  <br>
 Locate 'Models/BlobStorage.cs' file and modify code as follow:<br>
+
 Add Azure storage libraries:
 ```
 using Azure;
@@ -135,3 +136,7 @@ So see running app visit following link:
 https://FileServiceUploadDownload.azurewebsites.net
 ```
 <img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/6.jpg" width="800"/>  <br>
+# Last step is to remove all created resources
+```
+az group delete --name FileService
+```
