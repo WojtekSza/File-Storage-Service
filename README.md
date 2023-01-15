@@ -122,21 +122,28 @@ az webapp config appsettings set --name FileServiceUploadDownload --resource-gro
 ```
 If every step was sucessfull then we should see following 3x resources in resource group:<br>
 <img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/5.jpg" width="800"/>  <br>
-####Finally we will deploy application:<br>
+
+####Finally we will deploy application:
+
 ```
 dotnet publish -o pub
 cd pub
 zip -r ../site.zip *
-```
-```
+``````
 az webapp deployment source config-zip --src ../site.zip --name FileServiceUploadDownload --resource-group FileService
 ``
+
 So see running app visit following link:
+
 ```
 https://FileServiceUploadDownload.azurewebsites.net
 ```
+
+Application should looks as follows:<br>
 <img src="https://github.com/WojtekSza/File-Storage-Service/blob/main/File%20Upload/6.jpg" width="800"/>  <br>
+
 # Last step is to remove all created resources
+
 ```
 az group delete --name FileService
 ```
